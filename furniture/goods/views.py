@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from goods.models import Products
 
 
@@ -11,8 +11,10 @@ def catalog(request):
     return render(request, "goods/catalog.html", context=context)
 
 
-def product(request):
+def product(request, product_slug):
+    product = Products.objects.get(slug=product_slug)
     context = {
         "tilte": "Товар",
+        "product": product,
     }
     return render(request, "goods/product.html", context=context)
