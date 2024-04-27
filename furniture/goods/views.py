@@ -4,15 +4,24 @@ from goods.models import Products
 
 
 def catalog(request, category_slug):
-    page = request.GET.get('page', 1)
-    if category_slug == 'vse-tovary':
+    page = request.GET.get("page", 1)
+    on_sale = request.GET.get("on_sale", None)
+    order_by = request.GET.get("order_by", "default")
+
+    if category_slug == "vse-tovary":
         goods = Products.objects.all()
     else:
         goods = get_list_or_404(Products.objects.filter(category__slug=category_slug))
-        
+
+    if on_sale:
+        goods = goods.filter(discount__gt=0)
+
+    if order_by and order_by != "default":
+        goods = goods.order_by(order_by)
+
     paginator = Paginator(goods, 3)
     current_page = paginator.page(int(page))
-    
+
     context = {
         "title": "Home - Каталог",
         "goods": current_page,
