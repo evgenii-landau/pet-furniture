@@ -49,6 +49,12 @@
 				<button type="submit" class="btn btn-primary mx-3 mt-3">Применить</button>
 			</form>
 		</div>
+	{% if goods %}
+		<h2>Результат поиска по товару: <b style='font-style: italic; text-decoration: underline;'>{{ request.GET.q }}</b></h2>
+	{% elif not goods %}
+		<link rel="stylesheet" href="{% static "deps/css/my_footer_css.css" %}">
+		<h2>К сожалению товаров по запросу <b style='font-style: italic; text-decoration: underline;'>{{ request.GET.q }}</b> не найдено. </h2>
+	{% endif %}
 	<!-- Карта товара -->
 	{% for product in goods %}
 		<div class="col-lg-4 col-md-6 p-4">
@@ -60,9 +66,9 @@
 				{% endif %}
 				<div class="card-body">
 					<a href="{% url "catalog:product" product.slug %}">
-						<p class="card-title">{{ product.name }}</p>
+						<p class="card-title">{% autoescape off %}{% if product.headline %}{{ product.headline }}{% else %}{{ product.name }}{% endif %}{% endautoescape %}</p>
 					</a>
-					<p class="card-text">{{ product.description|truncatechars:60 }}</p>
+					<p class="card-text">{% autoescape off %}{% if product.bodyline %}{{ product.bodyline|truncatechars:100 }}{% else %}{{ product.description|truncatechars:35 }}{% endif %}{% endautoescape %}</p>
 					<p class="product_id">id: {{ product.get_correct_id }}</p>
 					<div class="d-flex justify-content-between">
 					{% if product.discount %}
@@ -83,6 +89,7 @@
 	{% endfor %}
 	</div>
 	<!-- Пагинация -->
+{% if goods %}
 	<nav aria-label="Page navigation example">
 		<ul class="pagination justify-content-center my-4">
 			<div class="custom-shadow d-flex">
@@ -104,6 +111,8 @@
 			</div>
 		</ul>
 	</nav>
+{% endif %}
+
 {% endblock %}
 {% block footer %}
 	<footer class="py-4 bg-dark">
